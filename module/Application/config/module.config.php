@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Application;
 
+use Album\Model\AlbumTableFactory;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
+use Laminas\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 
 return [
@@ -21,6 +23,18 @@ return [
                     ],
                 ],
             ],
+            'album' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/album[/:action[/:id]]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[0-9]+',
+                    ],
+                    'defaults' => Controller\AlbumController::class,
+                    'action' => 'index',
+                ]
+            ],
             'application' => [
                 'type'    => Segment::class,
                 'options' => [
@@ -35,7 +49,7 @@ return [
     ],
     'controllers' => [
         'factories' => [
-            Controller\IndexController::class => InvokableFactory::class,
+            Controller\AlbumController::class => ReflectionBasedAbstractFactory::class,
         ],
     ],
     'view_manager' => [
@@ -54,4 +68,9 @@ return [
             __DIR__ . '/../view',
         ],
     ],
+    'service_manager' => [
+        'factories' => [
+            Model\AlbumTable::class => AlbumTableFactory::class,
+        ]
+    ]
 ];
